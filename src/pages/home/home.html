@@ -1,14 +1,34 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Ionic Blank
+  <ion-navbar color="bluedark">
+    <ion-title style="text-align:center;">
+      TV Online HD
     </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+<ion-content style="background:#dedede;">
+  <ion-segment [(ngModel)]="tv">
+    <ion-segment-button value="indonesia">
+      TV Indonesia
+    </ion-segment-button>
+    <ion-segment-button value="olahraga">
+      TV Olahraga
+    </ion-segment-button>
+  </ion-segment>
+  <div [ngSwitch]="tv">
+    <ion-list style="padding-top:5px; "*ngSwitchCase="'indonesia'">
+      <ion-row>
+        <ion-col col-4 *ngFor="let indo of channelindo" (click)="goToLiveIndo(indo)">
+          <img style="width:100%;height:100%;" src="{{indo.thumbnail_picture}}" />
+        </ion-col>
+      </ion-row>
+    </ion-list>
+    <ion-list *ngSwitchCase="'olahraga'">
+      <ion-row>
+        <ion-col col-4 *ngFor="let sports of channelsports" (click)="goToLiveSports(sports)">
+          <img src="{{sports.thumbnail_picture}}" />
+        </ion-col>
+      </ion-row>
+    </ion-list>
+  </div>
 </ion-content>
