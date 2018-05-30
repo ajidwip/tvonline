@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, Platform } from 'ionic-angular';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { ApiProvider } from '../../providers/api/api';
+import { AdMobPro } from '@ionic-native/admob-pro';
 
 @Component({
   selector: 'page-home',
@@ -16,15 +17,11 @@ export class HomePage {
     public navCtrl: NavController,
     private screenOrientation: ScreenOrientation,
     public api: ApiProvider,
-    public platform: Platform) {
+    public platform: Platform,
+    private admob: AdMobPro) {
     this.tv = 'indonesia'
     this.doGetChannelIndonesia();
     this.doGetChannelSports();
-  }
-  ionViewDidEnter() {
-    if (this.platform.is('cordova')) {
-      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
-    }
   }
   goToLiveIndo(indo) {
     this.navCtrl.push('LivePage', {
@@ -37,15 +34,35 @@ export class HomePage {
     })
   }
   doGetChannelIndonesia() {
-    this.api.get("table/z_channel", { params: { limit: 100, filter: "country=" + "'Indonesia'", sort: "channel_name" + " ASC " } })
+    this.api.get("table/z_channel", { params: { limit: 100, filter: "country=" + "'Indonesia' AND status='OPEN'", sort: "channel_name" + " ASC " } })
       .subscribe(val => {
         this.channelindo = val['data']
       });
   }
   doGetChannelSports() {
-    this.api.get("table/z_channel", { params: { limit: 100, filter: "category=" + "'Sports'", sort: "channel_name" + " ASC " } })
+    this.api.get("table/z_channel", { params: { limit: 100, filter: "category=" + "'Sports' AND status='OPEN'", sort: "channel_name" + " ASC " } })
       .subscribe(val => {
         this.channelsports = val['data']
       });
+  }
+  ionViewDidEnter() {
+    var admobid = {
+      banner: 'ca-app-pub-7488223921090533/6563022700',
+      interstitial: 'ca-app-pub-7488223921090533/1463449702'
+    };
+
+    this.admob.createBanner({
+      adSize: 'SMART_BANNER',
+      adId: admobid.banner,
+      isTesting: true,
+      autoShow: true,
+      position: this.admob.AD_POSITION.BOTTOM_CENTER,
+    });
+    if (this.platform.is('cordova')) {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    }
+  }
+  ionViewWillLeave() {
+    this.admob.removeBanner();
   }
 }
